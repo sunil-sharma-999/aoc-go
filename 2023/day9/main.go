@@ -95,10 +95,6 @@ func main() {
 	path := flag.String("path", "./2023/day9/input.txt", "Enter file path")
 	flag.Parse()
 
-	if *path == "" {
-		log.Fatal("Enter file path")
-	}
-
 	file, err := os.Open(*path)
 	if err != nil {
 		log.Fatal(err)
