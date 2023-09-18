@@ -92,7 +92,7 @@ func makeMove(move Position, head *Node, tails *[]*Node, visited *map[string]boo
 
 func main() {
 	tailCount := flag.Int("tails", 1, "Enter the number of tails")
-	path := flag.String("path", "./2023/day9/input.txt", "Enter file path")
+	path := flag.String("path", "./2022/day9/input.txt", "Enter file path")
 	flag.Parse()
 
 	file, err := os.Open(*path)
