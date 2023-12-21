@@ -149,6 +149,5 @@ func main() {
 			}
 		}
 	}
-	fmt.Println(total)
-
+	fmt.Printf("What is the sum of all of the part numbers in the engine schematic?\n%d\n", total)
 }
