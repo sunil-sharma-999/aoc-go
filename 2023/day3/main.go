@@ -11,13 +11,19 @@ import (
 	"strings"
 )
 
-func hasSymbolsAround(numRange []int, rowIndex int, lines []string, regex *regexp.Regexp) bool {
+type Matches struct {
+	value int
+	coord [2]int
+}
+
+func hasSymbolsAround(numRange []int, rowIndex int, lines []string) ([2]int, bool) {
 
 	start := numRange[0]
 	end := numRange[1]
 	specialCharRegex := regexp.MustCompile(`\w|\.`)
 
-	answer := false
+	ok := false
+	answer := [2]int{-1, -1}
 
 loop:
 	for i := start; i < end; i++ {
@@ -32,7 +38,8 @@ loop:
 			char := lines[topIndex][i]
 			boolean := specialCharRegex.FindString(string(char))
 			if boolean == "" {
-				answer = true
+				ok = true
+				answer = [2]int{topIndex, i}
 				break loop
 			}
 		}
@@ -42,7 +49,8 @@ loop:
 			char := lines[bottomIndex][i]
 			boolean := specialCharRegex.FindString(string(char))
 			if boolean == "" {
-				answer = true
+				ok = true
+				answer = [2]int{bottomIndex, i}
 				break loop
 			}
 		}
@@ -55,7 +63,8 @@ loop:
 				char := lines[rowIndex][leftIndex]
 				boolean := specialCharRegex.FindString(string(char))
 				if boolean == "" {
-					answer = true
+					ok = true
+					answer = [2]int{rowIndex, leftIndex}
 					break loop
 				}
 			}
@@ -65,7 +74,8 @@ loop:
 				char := lines[topIndex][leftIndex]
 				boolean := specialCharRegex.FindString(string(char))
 				if boolean == "" {
-					answer = true
+					ok = true
+					answer = [2]int{topIndex, leftIndex}
 					break loop
 				}
 			}
@@ -74,7 +84,8 @@ loop:
 				char := lines[bottomIndex][leftIndex]
 				boolean := specialCharRegex.FindString(string(char))
 				if boolean == "" {
-					answer = true
+					ok = true
+					answer = [2]int{bottomIndex, leftIndex}
 					break loop
 				}
 			}
@@ -86,7 +97,8 @@ loop:
 				char := lines[rowIndex][rightIndex]
 				boolean := specialCharRegex.FindString(string(char))
 				if boolean == "" {
-					answer = true
+					ok = true
+					answer = [2]int{rowIndex, rightIndex}
 					break loop
 				}
 			}
@@ -96,7 +108,8 @@ loop:
 				char := lines[topIndex][rightIndex]
 				boolean := specialCharRegex.FindString(string(char))
 				if boolean == "" {
-					answer = true
+					ok = true
+					answer = [2]int{topIndex, rightIndex}
 					break loop
 				}
 			}
@@ -105,7 +118,8 @@ loop:
 				char := lines[bottomIndex][rightIndex]
 				boolean := specialCharRegex.FindString(string(char))
 				if boolean == "" {
-					answer = true
+					ok = true
+					answer = [2]int{bottomIndex, rightIndex}
 					break loop
 				}
 			}
@@ -113,7 +127,7 @@ loop:
 
 	}
 
-	return answer
+	return answer, ok
 }
 
 func main() {
@@ -131,23 +145,43 @@ func main() {
 
 	allMatches := [][][]int{}
 	lines := []string{}
+
+	total := 0
+	ratio := 0
+	var allGears []Matches
+
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		matches := regex.FindAllStringIndex(line, -1)
 		allMatches = append(allMatches, matches)
 		lines = append(lines, line)
 	}
-	total := 0
+
 	for rowIndex, match := range allMatches {
 		for _, numRange := range match {
-			isTrue := hasSymbolsAround(numRange, rowIndex, lines, regex)
-			if isTrue {
+			coord, ok := hasSymbolsAround(numRange, rowIndex, lines)
+			if ok {
 				line := lines[rowIndex]
 				numStr := line[numRange[0]:numRange[1]]
 				num, _ := strconv.Atoi(numStr)
 				total += num
+
+				allGears = append(allGears, Matches{value: num, coord: coord})
 			}
 		}
 	}
+
+	allCoords := map[[2]int][]int{}
+	for _, gear := range allGears {
+		allCoords[gear.coord] = append(allCoords[gear.coord], gear.value)
+	}
+	for _, value := range allCoords {
+		if len(value) == 2 {
+			ratio += value[0] * value[1]
+		}
+	}
+
 	fmt.Printf("What is the sum of all of the part numbers in the engine schematic?\n%d\n", total)
+	fmt.Printf("What is the sum of all of the gear ratios in your engine schematic??\n%d\n", ratio)
+
 }
