@@ -181,7 +181,7 @@ func main() {
 		}
 	}
 
-	fmt.Printf("What is the sum of all of the part numbers in the engine schematic?\n%d\n", total)
-	fmt.Printf("What is the sum of all of the gear ratios in your engine schematic??\n%d\n", ratio)
+	fmt.Printf("\nWhat is the sum of all of the part numbers in the engine schematic?\n%d\n", total)
+	fmt.Printf("\nWhat is the sum of all of the gear ratios in your engine schematic??\n%d\n\n", ratio)
 
 }
