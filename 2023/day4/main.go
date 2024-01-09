@@ -42,12 +42,9 @@ func main() {
 		matches := []int{}
 
 		for _, numChar := range numbers {
-			alreadyMatches := map[string]bool{}
 		loop:
 			for _, winningNumChar := range winningNumbers {
-				_, ok := alreadyMatches[numChar]
-				if strings.TrimSpace(numChar) == strings.TrimSpace(winningNumChar) && (!ok) {
-					alreadyMatches[strings.TrimSpace(numChar)] = true
+				if strings.TrimSpace(numChar) == strings.TrimSpace(winningNumChar) {
 					if len(matches) < 2 {
 						matches = append(matches, 1)
 					} else {
