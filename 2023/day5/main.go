@@ -10,17 +10,6 @@ import (
 	"strings"
 )
 
-type Data struct {
-	seeds                 []int
-	seedsToSoil           map[int]int
-	soilToFertilizer      map[int]int
-	fertilizerToWater     map[int]int
-	waterToLight          map[int]int
-	lightToTemperature    map[int]int
-	temperatureToHumidity map[int]int
-	humidityToLocation    map[int]int
-}
-
 func ToNum(str string) int {
 	num, err := strconv.Atoi(str)
 	if err != nil {
@@ -64,20 +53,20 @@ func formatMaps(str string) [][]int {
 	return arrOfArrNum
 }
 
-func mapSeedsToResource(arr [][]int) map[int]int {
-	numsMap := map[int]int{}
-	for i := 0; i < 100; i++ {
-		numsMap[i] = i
-	}
+func findCorrespond(num int, arr [][]int) int {
+	mappedNum := num
+
+loop:
 	for _, details := range arr {
 		destination := details[0]
 		source := details[1]
 		rangeLength := details[2]
-		for i := source; i < source+rangeLength; i++ {
-			numsMap[i] = destination + (i - source)
+		if num >= source && num < source+rangeLength {
+			mappedNum = (destination - source) + num
+			break loop
 		}
 	}
-	return numsMap
+	return mappedNum
 }
 
 func main() {
@@ -104,23 +93,18 @@ func main() {
 		}
 	}
 	dataArr = append(dataArr, strings.TrimSpace(str))
-	// cleanup
+	// cleanup str
 	str = ""
 
-	data := Data{
-		seeds:                 formatSeeds(dataArr[0]),
-		seedsToSoil:           mapSeedsToResource(formatMaps(dataArr[1])),
-		soilToFertilizer:      mapSeedsToResource(formatMaps(dataArr[2])),
-		fertilizerToWater:     mapSeedsToResource(formatMaps(dataArr[3])),
-		waterToLight:          mapSeedsToResource(formatMaps(dataArr[4])),
-		lightToTemperature:    mapSeedsToResource(formatMaps(dataArr[5])),
-		temperatureToHumidity: mapSeedsToResource(formatMaps(dataArr[6])),
-		humidityToLocation:    mapSeedsToResource(formatMaps(dataArr[7])),
-	}
-	locations := []int{}
-	for _, s := range data.seeds {
-		locations = append(locations, data.humidityToLocation[data.temperatureToHumidity[data.lightToTemperature[data.waterToLight[data.fertilizerToWater[data.soilToFertilizer[data.seedsToSoil[s]]]]]]])
+	seeds := formatSeeds(dataArr[0])
 
+	locations := []int{}
+	for _, seed := range seeds {
+		location := seed
+		for _, mapper := range dataArr[1:] {
+			location = findCorrespond(location, formatMaps(mapper))
+		}
+		locations = append(locations, location)
 	}
 	fmt.Printf("\nWhat is the lowest location number that corresponds to any of the initial seed numbers? %d\n\n", findMin(locations))
 }
