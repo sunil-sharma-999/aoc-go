@@ -15,9 +15,10 @@ $(BUILD_DIR)/%.exe: $(SRC_DIR)/%/main.go
 
 .PHONY: run
 run:
-	@year=$(word 2, $(MAKECMDGOALS)); \
+	@ \
+	year=$(word 2, $(MAKECMDGOALS)); \
 	day=$(word 3, $(MAKECMDGOALS)); \
-	args=$(filter-out $@,$(MAKECMDGOALS)); \
+	args=$(filter-out $@ 2 3,$(MAKECMDGOALS)); \
 	$(BUILD_DIR)/$$year/day$$day.exe $$args
 
 # Prevent make from interpreting year and day as targets
