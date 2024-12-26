@@ -14,23 +14,23 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	lines := []string{}
+	inputLines := []string{}
 
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		inputLines = append(inputLines, scanner.Text())
 	}
 
 	if scanner.Err() != nil {
 		panic("error reading standard input")
 	}
 
-	rows := len(lines)
-	re := regexp.MustCompile(`\s+`)
+	totalRows := len(inputLines)
+	whitespaceRegex := regexp.MustCompile(`\s+`)
 	nums1 := []int{}
 	nums2 := []int{}
 
-	for i := 0; i < rows; i++ {
-		lineArr := re.Split(lines[i], -1)
+	for i := 0; i < totalRows; i++ {
+		lineArr := whitespaceRegex.Split(inputLines[i], -1)
 		if len(lineArr) != 2 {
 			panic(("Invalid input"))
 		}
@@ -59,14 +59,14 @@ func main() {
 	fmt.Printf("Part 1: What is the total distance between your lists?\n%d\n", sum)
 
 	sum = 0
-	for i := 0; i < len(nums1); i++ {
+	for _, num1 := range nums1 {
 		times := 0
-		for j := 0; j < len(nums2); j++ {
-			if nums1[i] == nums2[j] {
+		for _, num2 := range nums2 {
+			if num1 == num2 {
 				times++
 			}
 		}
-		sum += times * nums1[i]
+		sum += times * num1
 	}
 	fmt.Println()
 	fmt.Printf("Part 2: What is their similarity score?\n%d\n", sum)
