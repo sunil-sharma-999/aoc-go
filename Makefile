@@ -18,7 +18,7 @@ run:
 	@ \
 	year=$(word 2, $(MAKECMDGOALS)); \
 	day=$(word 3, $(MAKECMDGOALS)); \
-	args=$(filter-out $@ 2 3,$(MAKECMDGOALS)); \
+	args=$(filter-out $@ 2 3 4,$(MAKECMDGOALS)); \
 	$(BUILD_DIR)/$$year/day$$day.exe $$args
 
 # Prevent make from interpreting year and day as targets
