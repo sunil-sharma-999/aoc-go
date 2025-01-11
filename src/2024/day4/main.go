@@ -12,10 +12,10 @@ const MATCH_WORD_LENGTH = len(MATCH_WORD)
 func checkWordAtIndex(xAxis, yAxis int, matrix []string) int {
 	count := 0
 	// center to left
-	if xAxis >= MATCH_WORD_LENGTH {
+	if xAxis >= MATCH_WORD_LENGTH-1 {
 		line := ""
 		for i := MATCH_WORD_LENGTH - 1; i >= 0; i-- {
-			line += string(matrix[yAxis][xAxis-i])
+			line = string(matrix[yAxis][xAxis-i]) + line
 		}
 		if line == MATCH_WORD {
 			count++
@@ -29,10 +29,10 @@ func checkWordAtIndex(xAxis, yAxis int, matrix []string) int {
 		}
 	}
 	// center to top
-	if yAxis >= MATCH_WORD_LENGTH {
+	if yAxis >= MATCH_WORD_LENGTH-1 {
 		line := ""
 		for i := MATCH_WORD_LENGTH - 1; i >= 0; i-- {
-			line += string(matrix[yAxis-i][xAxis])
+			line = string(matrix[yAxis-i][xAxis]) + line
 		}
 		if line == MATCH_WORD {
 			count++
@@ -49,7 +49,7 @@ func checkWordAtIndex(xAxis, yAxis int, matrix []string) int {
 		}
 	}
 	// center to top left
-	if xAxis >= MATCH_WORD_LENGTH && yAxis >= MATCH_WORD_LENGTH {
+	if xAxis >= MATCH_WORD_LENGTH-1 && yAxis >= MATCH_WORD_LENGTH-1 {
 		line := ""
 		for i := 0; i < MATCH_WORD_LENGTH; i++ {
 			line += string(matrix[yAxis-i][xAxis-i])
@@ -59,7 +59,7 @@ func checkWordAtIndex(xAxis, yAxis int, matrix []string) int {
 		}
 	}
 	// center to top right
-	if xAxis+MATCH_WORD_LENGTH <= len(matrix[yAxis]) && yAxis >= MATCH_WORD_LENGTH {
+	if xAxis+MATCH_WORD_LENGTH <= len(matrix[yAxis]) && yAxis >= MATCH_WORD_LENGTH-1 {
 		line := ""
 		for i := 0; i < MATCH_WORD_LENGTH; i++ {
 			line += string(matrix[yAxis-i][xAxis+i])
@@ -79,9 +79,9 @@ func checkWordAtIndex(xAxis, yAxis int, matrix []string) int {
 		}
 	}
 	// center to bottom left
-	if xAxis >= MATCH_WORD_LENGTH && yAxis+MATCH_WORD_LENGTH <= len(matrix) {
+	if xAxis >= MATCH_WORD_LENGTH-1 && yAxis+MATCH_WORD_LENGTH <= len(matrix) {
 		line := ""
-		for i := MATCH_WORD_LENGTH - 1; i >= 0; i-- {
+		for i := 0; i < MATCH_WORD_LENGTH; i++ {
 			line += string(matrix[yAxis+i][xAxis-i])
 		}
 		if line == MATCH_WORD {
@@ -107,10 +107,14 @@ func main() {
 
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[i]); j++ {
-			count += checkWordAtIndex(j, i, lines)
+			if lines[i][j] == MATCH_WORD[0] {
+				count += checkWordAtIndex(j, i, lines)
+			}
 		}
 	}
 
 	fmt.Printf("\nPart 1: How many times does XMAS appear?\n%d\n", count)
+	// TODO: Part 2
+	fmt.Printf("\nPart 2: How many times does an X-MAS appear??\n%d\n", count)
 
 }
