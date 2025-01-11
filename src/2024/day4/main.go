@@ -4,10 +4,93 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 )
 
 const MATCH_WORD = "XMAS"
+const MATCH_WORD_LENGTH = len(MATCH_WORD)
+
+func checkWordAtIndex(xAxis, yAxis int, matrix []string) int {
+	count := 0
+	// center to left
+	if xAxis >= MATCH_WORD_LENGTH {
+		line := ""
+		for i := MATCH_WORD_LENGTH - 1; i >= 0; i-- {
+			line += string(matrix[yAxis][xAxis-i])
+		}
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+	// center to right
+	if xAxis+MATCH_WORD_LENGTH <= len(matrix[yAxis]) {
+		line := matrix[yAxis][xAxis : xAxis+MATCH_WORD_LENGTH]
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+	// center to top
+	if yAxis >= MATCH_WORD_LENGTH {
+		line := ""
+		for i := MATCH_WORD_LENGTH - 1; i >= 0; i-- {
+			line += string(matrix[yAxis-i][xAxis])
+		}
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+	// center to bottom
+	if yAxis+MATCH_WORD_LENGTH <= len(matrix) {
+		line := ""
+		for i := 0; i < MATCH_WORD_LENGTH; i++ {
+			line += string(matrix[yAxis+i][xAxis])
+		}
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+	// center to top left
+	if xAxis >= MATCH_WORD_LENGTH && yAxis >= MATCH_WORD_LENGTH {
+		line := ""
+		for i := 0; i < MATCH_WORD_LENGTH; i++ {
+			line += string(matrix[yAxis-i][xAxis-i])
+		}
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+	// center to top right
+	if xAxis+MATCH_WORD_LENGTH <= len(matrix[yAxis]) && yAxis >= MATCH_WORD_LENGTH {
+		line := ""
+		for i := 0; i < MATCH_WORD_LENGTH; i++ {
+			line += string(matrix[yAxis-i][xAxis+i])
+		}
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+	// center to bottom right
+	if xAxis+MATCH_WORD_LENGTH <= len(matrix[yAxis]) && yAxis+MATCH_WORD_LENGTH <= len(matrix) {
+		line := ""
+		for i := 0; i < MATCH_WORD_LENGTH; i++ {
+			line += string(matrix[yAxis+i][xAxis+i])
+		}
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+	// center to bottom left
+	if xAxis >= MATCH_WORD_LENGTH && yAxis+MATCH_WORD_LENGTH <= len(matrix) {
+		line := ""
+		for i := MATCH_WORD_LENGTH - 1; i >= 0; i-- {
+			line += string(matrix[yAxis+i][xAxis-i])
+		}
+		if line == MATCH_WORD {
+			count++
+		}
+	}
+
+	return count
+}
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
@@ -20,38 +103,14 @@ func main() {
 		panic(err)
 	}
 
-	matchCount := 0
+	count := 0
 
-	for i, line := range lines {
-		// check if line contains MATCH_WORD
-		if strings.Contains(line, MATCH_WORD) {
-			matchCount++
-		}
-		// check if reverse of line contains MATCH_WORD
-		if strings.Contains(reverse(line), MATCH_WORD) {
-			matchCount++
-		}
-		// check if vertical line matches MATCH_WORD
-		verticalLine := ""
-		for _, line := range lines {
-			verticalLine += string(line[i])
-		}
-		if strings.Contains(verticalLine, MATCH_WORD) {
-			matchCount++
-		}
-		// check if reverse of vertical line matches MATCH_WORD
-		if strings.Contains(reverse(verticalLine), MATCH_WORD) {
-			matchCount++
+	for i := 0; i < len(lines); i++ {
+		for j := 0; j < len(lines[i]); j++ {
+			count += checkWordAtIndex(j, i, lines)
 		}
 	}
 
-	fmt.Println("Match count:", matchCount)
-}
+	fmt.Printf("\nPart 1: How many times does XMAS appear?\n%d\n", count)
 
-func reverse(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
 }
