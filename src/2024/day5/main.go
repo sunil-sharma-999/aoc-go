@@ -35,24 +35,42 @@ func checkOrder(nums []int, rules map[int][]int) bool {
 }
 
 func orderCorrection(nums []int, rules map[int][]int) []int {
+	// Continue correcting the order until all rules are satisfied
 	for !checkOrder(nums, rules) {
+
+		// Traverse the list from left to right
 		for numIndex := 0; numIndex < len(nums); numIndex++ {
-			num1 := nums[numIndex]
+			num1 := nums[numIndex] // Current number being checked
+
+			// Skip first element (nothing comes before it to swap with)
 			if numIndex == 0 {
 				continue
 			}
-			currNumRuleOrderNums := rules[num1]
 
+			// Get the list of numbers that are supposed to come after num1
+			// (i.e., num1 should appear before these in the list)
+			currNumRuleOrderNums := rules[num1]
 			if currNumRuleOrderNums == nil {
-				continue
+				continue // No rule for this number, skip
 			}
+
+			// Check all numbers that num1 is supposed to precede
 			for _, orderNum := range currNumRuleOrderNums {
+				// Find where that dependent number is in the list
 				foundOrderNumIndex := findIndex(orderNum, nums)
+
+				// If the dependent number isn't present, or already appears after num1, skip
 				if foundOrderNumIndex == -1 || numIndex < foundOrderNumIndex {
 					continue
 				}
+
+				// If rule is violated (dependent number comes before num1), swap them
+				// This brings num1 earlier and pushes the dependent number later
 				nums[numIndex] = orderNum
 				nums[foundOrderNumIndex] = num1
+
+				// Reset numIndex to the position of the swapped number
+				// This ensures we re-check the new position for additional violations
 				numIndex = foundOrderNumIndex
 			}
 		}
