@@ -8,18 +8,6 @@ import (
 	"strings"
 )
 
-func isArrayEqual(array1, array2 []int) bool {
-	if len(array1) != len(array2) {
-		return false
-	}
-	for i := range array1 {
-		if array1[i] != array2[i] {
-			return false
-		}
-	}
-	return true
-}
-
 func findIndex(numToMatch int, arr []int) int {
 	for i, num := range arr {
 		if num == numToMatch {
@@ -27,6 +15,49 @@ func findIndex(numToMatch int, arr []int) int {
 		}
 	}
 	return -1
+}
+
+func checkOrder(nums []int, rules map[int][]int) bool {
+	for numIndex, num := range nums {
+		// assume order is correct if there is no order entry of that number
+		if rules[num] == nil {
+			continue
+		}
+		// loop over order values of pageNum where pageNum should be first
+		for _, orderNum := range rules[num] {
+			orderNumIndex := findIndex(orderNum, nums)
+			if orderNumIndex < numIndex && orderNumIndex != -1 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func orderCorrection(nums []int, rules map[int][]int) []int {
+	for !checkOrder(nums, rules) {
+		for numIndex := 0; numIndex < len(nums); numIndex++ {
+			num1 := nums[numIndex]
+			if numIndex == 0 {
+				continue
+			}
+			currNumRuleOrderNums := rules[num1]
+
+			if currNumRuleOrderNums == nil {
+				continue
+			}
+			for _, orderNum := range currNumRuleOrderNums {
+				foundOrderNumIndex := findIndex(orderNum, nums)
+				if foundOrderNumIndex == -1 || numIndex < foundOrderNumIndex {
+					continue
+				}
+				nums[numIndex] = orderNum
+				nums[foundOrderNumIndex] = num1
+				numIndex = foundOrderNumIndex
+			}
+		}
+	}
+	return nums
 }
 
 func main() {
@@ -69,28 +100,15 @@ scannerLoop:
 	}
 
 	validPageNumRows := [][]int{}
+	invalidPageNumRows := [][]int{}
 
 	// loop over all rows
-rowsLoop:
 	for _, pageNumberRow := range pageNumberRows {
-		// loop over numbers of row
-		isValid := true
-		for pageNumIndex, pageNum := range pageNumberRow {
-			// assume order is correct if there is no order entry of that number
-			if orders[pageNum] == nil {
-				continue
-			}
-			// loop over order values of pageNum where pageNum should be first
-			for _, orderNum := range orders[pageNum] {
-				orderNumIndex := findIndex(orderNum, pageNumberRow)
-				if orderNumIndex < pageNumIndex && orderNumIndex != -1 {
-					isValid = false
-					continue rowsLoop
-				}
-			}
-		}
+		isValid := checkOrder(pageNumberRow, orders)
 		if isValid {
 			validPageNumRows = append(validPageNumRows, pageNumberRow)
+		} else {
+			invalidPageNumRows = append(invalidPageNumRows, pageNumberRow)
 		}
 	}
 
@@ -101,4 +119,19 @@ rowsLoop:
 	}
 
 	fmt.Println("What do you get if you add up the middle page number from those correctly-ordered updates?", sum)
+
+	// 2nd Part
+	sum = 0
+
+	correctedOrders := [][]int{}
+
+	for _, invalidRow := range invalidPageNumRows {
+		correctedOrders = append(correctedOrders, orderCorrection(invalidRow, orders))
+	}
+
+	for _, correctedOrder := range correctedOrders {
+		sum += correctedOrder[len(correctedOrder)/2]
+	}
+
+	fmt.Println("What do you get if you add up the middle page numbers after correctly ordering just those updates?", sum)
 }
